@@ -8,7 +8,7 @@ CREATE TABLE `dsm_user` (
 `admin` tinyint(1) DEFAULT NULL,
 PRIMARY KEY (`id`),
 UNIQUE KEY `user` (`user`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 
 /* password: unibas */
 INSERT INTO `dsm_user` (`id`, `user`, `email`, `password`, `secret`, `admin`)
@@ -24,5 +24,13 @@ CREATE TABLE `dsm_dataset` (
 `public` tinyint(1) DEFAULT NULL,
 `owner` int(11) DEFAULT NULL,
 PRIMARY KEY (`id`),
-UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
+INDEX `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `dsm_session`;
+CREATE TABLE `dsm_session` (
+`user_id` int(11) unsigned NOT NULL,
+`agent` varchar(255) DEFAULT NULL,
+`secret` varchar(60) DEFAULT NULL,
+`last_active` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
