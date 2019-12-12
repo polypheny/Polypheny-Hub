@@ -14,7 +14,7 @@ class Access {
 
 	function __construct() {
 		try {
-			$this->conn = new PDO("mysql:host=localhost;dbname=unibas;charset=utf8", 'root', '');
+			$this->conn = new PDO("mysql:host=" + DB_HOST + ";dbname=" + DB_NAME + ";charset=utf8", DB_USER, DB_PASSWORD);
 		} catch (PDOException $e) {
 			echo $e->getMessage();
 		}
@@ -43,7 +43,7 @@ class Access {
 	}
 
 	function login($user, $pw) {
-		$query = "SELECT `id`, `user`, `password`, admin FROM dsm_user WHERE user = ?";
+		$query = "SELECT `id`, `user`, `password`, `admin` FROM `dsm_user` WHERE `user` = ?";
 		$prep = $this->conn->prepare($query);
 		$prep->execute([$user]);
 		$userResult = $prep->fetch(PDO::FETCH_ASSOC);
@@ -177,7 +177,7 @@ class Access {
 	}
 
 	function deleteUser( $userId, $secret, $deleteUser ){
-		//todo delete all his private datasets
+		// todo delete all private datasets owned by this user
 		if( $this->isLoggedIn( $userId, $secret ) == LoginStatus::ADMIN ){
 			$query = "DELETE FROM dsm_user WHERE id = ?";
 			$prep = $this->conn->prepare( $query );
