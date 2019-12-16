@@ -1,3 +1,11 @@
-Header add Access-Control-Allow-Origin "*"
-Header add Access-Control-Allow-Methods "GET,POST,OPTIONS,DELETE,PUT"
-Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [L,R=204]
+
+Header set X-Content-Type-Options "nosniff"
+Header set X-XSS-Protection "1; mode=block"
+
+Header always set Access-Control-Max-Age 1728000
+Header always set Access-Control-Allow-Origin: "*"
+Header always set Access-Control-Allow-Methods: "GET,POST,OPTIONS,DELETE,PUT"
+Header always set Access-Control-Allow-Headers: "Content-Type,Authorization,Keep-Alive,User-Agent,X-Requested-With"
+Header always set Access-Control-Allow-Credentials true
