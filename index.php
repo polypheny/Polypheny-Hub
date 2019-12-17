@@ -53,18 +53,18 @@ if ( isset( $_POST[ "action" ] ) ) {
             $r = ( new Result() )->error( "The action '$action' does not exist." );
             echo $r->asJson();
     }
-}
-?>
-
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Polypheny Hub</title>
-</head>
-<body>
-<h1 style="text-align: center">Polypheny Hub</h1>
-<p style="text-align: center">This API is intended to be used by the Polypheny UI. You can learn more about Polypheny on our <a href="https://github.com/polypheny">homepage</a>.</p>
-</body>
-</html>
+} else {
+    ?>
+    <!DOCTYPE html>
+    <html lang="de">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Polypheny Hub</title>
+    </head>
+    <body>
+    <h1 style="text-align: center">Polypheny Hub</h1>
+    <p style="text-align: center">This API is intended to be used by the Polypheny UI. You can learn more about Polypheny on our <a href="https://github.com/polypheny">homepage</a>.</p>
+    </body>
+    </html>
+<?php } ?>
