@@ -240,15 +240,15 @@ class Access {
         $result = null;
         $loginStatus = $this->isLoggedIn( $id, $secret );
         if ( $loginStatus == LoginStatus::NORMAL_USER ) {
-            $query = "SELECT `name`, `uploaded`, `public`, `id`, `file`, `owner` FROM `dsm_dataset` WHERE `public` = 1 OR `owner` = ? ORDER BY `uploaded` DESC";
+            $query = "SELECT `name`, `uploaded`, `public`, `dsm_dataset`.`id`, `file`, `user` FROM `dsm_dataset` JOIN `dsm_user` ON `dsm_user`.`id` = `dsm_dataset`.`owner` WHERE `public` = 1 OR `owner` = ? ORDER BY `uploaded` DESC";
             $prep = $this->conn->prepare( $query );
             $prep->execute( [ $id ] );
             $result = $prep->fetchAll( PDO::FETCH_NUM );
         } else {
             if ( $loginStatus == LoginStatus::ADMIN ) {
-                $query = "SELECT `name`, `uploaded`, `public`, `id`, `file`, `owner` FROM `dsm_dataset` ORDER BY `uploaded` DESC";
+                $query = "SELECT `name`, `uploaded`, `public`, `dsm_dataset`.`id`, `file`, `user` FROM `dsm_dataset` JOIN `dsm_user` ON `dsm_user`.`id` = `dsm_dataset`.`owner` ORDER BY `uploaded` DESC";
             } else {
-                $query = "SELECT `name`, `uploaded`, `public`, `id`, `file`, `owner` FROM `dsm_dataset` WHERE `public` = 1 ORDER BY `uploaded` DESC";
+                $query = "SELECT `name`, `uploaded`, `public`, `dsm_dataset`.`id`, `file`, `user` FROM `dsm_dataset` JOIN `dsm_user` ON `dsm_user`.`id` = `dsm_dataset`.`owner` WHERE `public` = 1 ORDER BY `uploaded` DESC";
             }
             $prep = $this->conn->prepare( $query );
             $prep->execute();
