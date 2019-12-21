@@ -53,34 +53,37 @@ if ( isset( $_POST[ "action" ] ) ) {
 			$r = ( new Result() )->error( "The action '$action' does not exist." );
 			echo $r->asJson();
 	}
-} else {
-	?>
+} else { ?>
 	<!DOCTYPE html>
 	<html lang="de">
-	<head>
-		<meta charset="utf-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<title>Polypheny Hub</title>
-		<style>
-			body{
-				margin: 1rem;
-				text-align: center;
-			}
-			img{
-				width: 30%;
-				margin: 0 auto;
-				display: block;
-			}
-			#imgWrapper{
-				margin-top: 1rem;
-			}
-		</style>
-	</head>
-	<body>
-		<h1>Polypheny Hub</h1>
-		<p>This API is intended to be used by the Polypheny UI. You can learn more about Polypheny on our
-		<a href="https://github.com/polypheny">homepage</a>.</p>
-		<div id="imgWrapper"><img src="logo.jpg"></div>
-	</body>
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Polypheny Hub</title>
+			<style>
+				body{
+					margin: 1rem;
+					text-align: center;
+				}
+				img{
+					width: 30%;
+					margin: 0 auto;
+					display: block;
+				}
+				.text {
+					font-size: 1.5em;
+				}
+				.imgWrapper{
+					margin-top: 1rem;
+					padding: 5rem 0;
+				}
+			</style>
+		</head>
+		<body>
+			<div class="imgWrapper">
+				<img src="logo.png">
+			</div>
+			<p class="text">This API is intended to be used by the Polypheny UI. You can learn more about Polypheny on our <a href="https://polypheny.org/">homepage</a>.</p>
+		</body>
 	</html>
 <?php } ?>
