@@ -283,10 +283,12 @@ class Access {
         $file = $this->uploadFolderPath . $uniqueName;
         if ( move_uploaded_file( $dataset[ "tmp_name" ], $file ) ) {
             $query = "INSERT INTO `dsm_dataset` ( `name`, `file`, `public`, `owner`, `uploaded` ) VALUES ( :name, :file, :pub, :owner, NOW() )";
+            //from: https://www.php.net/manual/en/function.boolval.php
+            $public = (int) filter_var($pub, FILTER_VALIDATE_BOOLEAN);
             $prep = $this->conn->prepare( $query );
             $prep->bindParam( ":name", $name );
             $prep->bindParam( ":file", $uniqueName );
-            $prep->bindParam( ":pub", intval( $pub ) );
+            $prep->bindParam( ":pub", $public );
             $prep->bindParam( ":owner", $userId );
             $prep->execute();
             return ( new Result() )->message( "Uploaded file." . mb_detect_encoding( $name ) );
