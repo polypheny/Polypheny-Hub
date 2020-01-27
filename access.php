@@ -291,7 +291,7 @@ class Access {
             $prep->bindParam( ":pub", $public );
             $prep->bindParam( ":owner", $userId );
             $prep->execute();
-            return ( new Result() )->message( "Uploaded file." . mb_detect_encoding( $name ) );
+            return ( new Result() )->message( "Uploaded file.");
         } else {
             return ( new Result() )->error( "Could not upload file" );
         }
