@@ -197,7 +197,8 @@ class Access {
             $query = "INSERT INTO `dsm_user` ( `user`, `admin`, `email`, `password` ) VALUES ( :user, :admin, :email, :password )";
             $prep = $this->conn->prepare( $query );
             $prep->bindParam( ":user", $userName );
-            $prep->bindParam( ":admin", intval( (bool)$admin ) );
+            //the submitted admin parameter needs to be numeric (0 or 1)
+            $prep->bindParam( ":admin", $admin );
             $prep->bindParam( ":email", $email );
             $prep->bindParam( ":password", $pw );
             $prep->execute();
