@@ -16,9 +16,6 @@ if ( isset( $_POST[ "action" ] ) ) {
 		case "logout":
 			$access->logout( $_POST[ "userId" ] );
 			break;
-		case "register":
-			echo $access->register( $_POST[ "username" ], $_POST[ "password" ] )->asJson();
-			break;
 		case "changePassword":
 			echo $access->changePassword( $_POST[ "userId" ], $_POST[ "secret" ], $_POST[ "oldPw" ], $_POST[ "newPw1" ], $_POST[ "newPw2" ] )->asJson();
 			break;
