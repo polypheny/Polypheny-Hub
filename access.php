@@ -167,24 +167,24 @@ class Access {
     function deleteUser( $userId, $secret, $deleteUser ) {
         if ( $this->isLoggedIn( $userId, $secret ) == LoginStatus::ADMIN ) {
             //delete private datasets owned by this user
-			$query1 = "SELECT `file` FROM `dsm_dataset` WHERE `owner` = ? AND `public` = 0";
-			$prep1 = $this->conn->prepare( $query1 );
-			$prep1->execute( [$deleteUser] );
-			$datasets = $prep1->fetchAll( PDO::FETCH_ASSOC );
-			if(sizeof($datasets) > 0){
-				foreach( $datasets as $dataset ){
-					unlink( $this->uploadFolderPath . $dataset["file"] );
-				}
-			}
-			$query2 = "DELETE FROM `dsm_dataset` WHERE  `owner` = ? AND `public` = 0";
-			$prep2 = $this->conn->prepare( $query2 );
-			$prep2->execute( [$deleteUser] );
-			$query3 = "UPDATE `dsm_dataset` SET `owner` = NULL WHERE `public` = 1 AND `owner` = ?";
-			$prep3 = $this->conn->prepare( $query3 );
-			$prep3->execute( [$deleteUser] );
-			$query4 = "DELETE FROM `dsm_user` WHERE `id` = ?";
-			$prep4 = $this->conn->prepare( $query4 );
-			$prep4->execute( [ $deleteUser ] );
+            $query1 = "SELECT `file` FROM `dsm_dataset` WHERE `owner` = ? AND `public` = 0";
+            $prep1 = $this->conn->prepare( $query1 );
+            $prep1->execute( [ $deleteUser ] );
+            $datasets = $prep1->fetchAll( PDO::FETCH_ASSOC );
+            if ( sizeof( $datasets ) > 0 ) {
+                foreach ( $datasets as $dataset ) {
+                    unlink( $this->uploadFolderPath . $dataset[ "file" ] );
+                }
+            }
+            $query2 = "DELETE FROM `dsm_dataset` WHERE  `owner` = ? AND `public` = 0";
+            $prep2 = $this->conn->prepare( $query2 );
+            $prep2->execute( [ $deleteUser ] );
+            $query3 = "UPDATE `dsm_dataset` SET `owner` = NULL WHERE `public` = 1 AND `owner` = ?";
+            $prep3 = $this->conn->prepare( $query3 );
+            $prep3->execute( [ $deleteUser ] );
+            $query4 = "DELETE FROM `dsm_user` WHERE `id` = ?";
+            $prep4 = $this->conn->prepare( $query4 );
+            $prep4->execute( [ $deleteUser ] );
             return ( new Result() )->message( "The user was deleted." );
         } else {
             return ( new Result() )->error( "You don't have the rights to delete a user." );
@@ -203,16 +203,16 @@ class Access {
             $prep->bindParam( ":email", $email );
             $prep->bindParam( ":password", $pw );
             $prep->execute();
-			if ( $prep->errorCode() == 0 ) {
-				// mail($email, "Welcome to Polypheny-DB Hub", "Hello $userName<br>Welcome to <a href='#'>Polypheny-DB Hub</a>. Your password is $pw");
-				return ( new Result() )->message( "The new user $userName was created. His password is: $uniqid" );
-			} else {
-				if ( $prep->errorInfo()[ 0 ] == "23000" ) {
-					return ( new Result() )->error( "Please choose another user name." );
-				} else {
-					return ( new Result() )->error( "The registration failed." );
-				}
-			}
+            if ( $prep->errorCode() == 0 ) {
+                // mail($email, "Welcome to Polypheny-DB Hub", "Hello $userName<br>Welcome to <a href='#'>Polypheny-DB Hub</a>. Your password is $pw");
+                return ( new Result() )->message( "The new user $userName was created. His password is: $uniqid" );
+            } else {
+                if ( $prep->errorInfo()[ 0 ] == "23000" ) {
+                    return ( new Result() )->error( "Please choose another user name." );
+                } else {
+                    return ( new Result() )->error( "The registration failed." );
+                }
+            }
         } else {
             return ( new Result() )->error( "You don't have the rights to create a user." );
         }
@@ -293,14 +293,14 @@ class Access {
         if ( move_uploaded_file( $dataset[ "tmp_name" ], $file ) ) {
             $query = "INSERT INTO `dsm_dataset` ( `name`, `file`, `public`, `owner`, `uploaded` ) VALUES ( :name, :file, :pub, :owner, NOW() )";
             //from: https://www.php.net/manual/en/function.boolval.php
-            $public = (int) filter_var($pub, FILTER_VALIDATE_BOOLEAN);
+            $public = (int)filter_var( $pub, FILTER_VALIDATE_BOOLEAN );
             $prep = $this->conn->prepare( $query );
             $prep->bindParam( ":name", $name );
             $prep->bindParam( ":file", $uniqueName );
             $prep->bindParam( ":pub", $public );
             $prep->bindParam( ":owner", $userId );
             $prep->execute();
-            return ( new Result() )->message( "Uploaded file.");
+            return ( new Result() )->message( "Uploaded file." );
         } else {
             return ( new Result() )->error( "Could not upload file" );
         }
