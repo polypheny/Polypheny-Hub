@@ -41,7 +41,11 @@ if ( isset( $_POST[ "action" ] ) ) {
             echo $access->editDataset( $_POST[ "userId" ], $_POST[ "secret" ], $_POST[ "dsId" ], $_POST[ "name" ], $_POST[ "pub" ] )->asJson();
             break;
         case "uploadDataset":
-            echo $access->uploadDataset( $_POST[ "userId" ], $_POST[ "secret" ], $_POST[ "name" ], $_POST[ "pub" ], $_FILES[ "dataset" ] )->asJson();
+            $files = null;
+            if (isset($_FILES["metaData"])) {
+                $files = $_FILES["metaData"];
+            }
+            echo $access->uploadDataset($_POST[ "userId" ], $_POST[ "secret" ], $_POST[ "name" ], $_POST[ "pub" ], $_FILES[ "dataset" ], $files)->asJson();
             break;
         case "deleteDataset":
             echo $access->deleteDataset( $_POST[ "userId" ], $_POST[ "secret" ], $_POST[ "datasetId" ] )->asJson();

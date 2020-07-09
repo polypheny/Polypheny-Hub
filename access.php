@@ -282,21 +282,22 @@ class Access {
         }
     }
 
-    function uploadDataset( $userId, $secret, $name, $pub, $dataset ) {
+    function uploadDataset( $userId, $secret, $name, $pub, $dataset, $metaData ) {
         $loginStatus = $this->isLoggedIn( $userId, $secret, false, true );
         if ( $loginStatus === LoginStatus::LOGGED_OUT ) {
             return ( new Result() )->error( "File was not uploaded. Please log in first. user $userId secret $secret" );
         }
 
-        $uniqueName = uniqid() . '.zip';
-        $file = $this->uploadFolderPath . $uniqueName;
-        if ( move_uploaded_file( $dataset[ "tmp_name" ], $file ) ) {
+        $uniqid = uniqid();
+        $zipFile = $this->uploadFolderPath . $uniqid . '.zip';
+        $metaFile = $this->uploadFolderPath . $uniqid . '.json';
+        if (move_uploaded_file($dataset["tmp_name"], $zipFile) && ($metaData == null || move_uploaded_file($metaData["tmp_name"], $metaFile))) {
             $query = "INSERT INTO `dsm_dataset` ( `name`, `file`, `public`, `owner`, `uploaded` ) VALUES ( :name, :file, :pub, :owner, NOW() )";
             //from: https://www.php.net/manual/en/function.boolval.php
             $public = (int)filter_var( $pub, FILTER_VALIDATE_BOOLEAN );
             $prep = $this->conn->prepare( $query );
             $prep->bindParam( ":name", $name );
-            $prep->bindParam( ":file", $uniqueName );
+            $prep->bindParam( ":file", $uniqid );
             $prep->bindParam( ":pub", $public );
             $prep->bindParam( ":owner", $userId );
             $prep->execute();
@@ -319,9 +320,13 @@ class Access {
         if ( $dataset[ "owner" ] != $userId && $loginStatus != LoginStatus::ADMIN ) {
             return ( new Result() )->error( "You don't have the rights to delete this dataset." );
         }
-        $file = $this->uploadFolderPath . $dataset[ "file" ];
-        if ( file_exists( $file ) ) {
-            unlink( $file );
+        $zipFile = $this->uploadFolderPath . $dataset[ "file" ] . '.zip';
+        if (file_exists( $zipFile )) {
+            unlink( $zipFile );
+        }
+        $metaFile = $this->uploadFolderPath . $dataset[ "file" ] . '.json';
+        if ( file_exists( $metaFile )) {
+            unlink( $metaFile );
         }
         $query2 = "DELETE FROM `dsm_dataset` WHERE `id` = :id";
         $prep2 = $this->conn->prepare( $query2 );
