@@ -19,6 +19,7 @@ DROP TABLE IF EXISTS `dsm_dataset`;
 CREATE TABLE `dsm_dataset` (
 `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 `name` varchar(255) NOT NULL DEFAULT '',
+`description` TEXT NULL,
 `file` varchar(255) NOT NULL DEFAULT '',
 `uploaded` datetime NOT NULL,
 `public` tinyint(1) DEFAULT NULL,
