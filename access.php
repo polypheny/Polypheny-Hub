@@ -176,10 +176,10 @@ class Access {
                     unlink( $this->uploadFolderPath . $dataset[ "file" ] );
                 }
             }
-            $query2 = "DELETE FROM `dsm_dataset` WHERE  `owner` = ? AND `public` = 0";
+            $query2 = "DELETE FROM `dsm_dataset` WHERE `owner` = ? AND `public` = 0";
             $prep2 = $this->conn->prepare( $query2 );
             $prep2->execute( [ $deleteUser ] );
-            $query3 = "UPDATE `dsm_dataset` SET `owner` = NULL WHERE `public` = 1 AND `owner` = ?";
+            $query3 = "UPDATE `dsm_dataset` SET `owner` = NULL WHERE `public` > 0 AND `owner` = ?";
             $prep3 = $this->conn->prepare( $query3 );
             $prep3->execute( [ $deleteUser ] );
             $query4 = "DELETE FROM `dsm_user` WHERE `id` = ?";
@@ -250,15 +250,18 @@ class Access {
         $result = null;
         $loginStatus = $this->isLoggedIn( $id, $secret );
         if ( $loginStatus == LoginStatus::NORMAL_USER ) {
-            $query = "SELECT `name`, `description`, `uploaded`, `public`, `dsm_dataset`.`id`, `file`, IFNULL(`user`,'--') AS user FROM `dsm_dataset` LEFT JOIN `dsm_user` ON `dsm_user`.`id` = `dsm_dataset`.`owner` WHERE `public` = 1 OR `owner` = ? ORDER BY `uploaded` DESC";
+            //get datasets that are public or internal
+            $query = "SELECT `name`, `description`, `uploaded`, `public`, `dsm_dataset`.`id`, `file`, IFNULL(`user`,'--') AS user, `owner` FROM `dsm_dataset` LEFT JOIN `dsm_user` ON `dsm_user`.`id` = `dsm_dataset`.`owner` WHERE `public` > 0 OR `owner` = ? ORDER BY `uploaded` DESC";
             $prep = $this->conn->prepare( $query );
             $prep->execute( [ $id ] );
             $result = $prep->fetchAll( PDO::FETCH_NUM );
         } else {
             if ( $loginStatus == LoginStatus::ADMIN ) {
-                $query = "SELECT `name`, `description`, `uploaded`, `public`, `dsm_dataset`.`id`, `file`, IFNULL(`user`,'--') AS user FROM `dsm_dataset` LEFT JOIN `dsm_user` ON `dsm_user`.`id` = `dsm_dataset`.`owner` ORDER BY `uploaded` DESC";
+                //get all datasets
+                $query = "SELECT `name`, `description`, `uploaded`, `public`, `dsm_dataset`.`id`, `file`, IFNULL(`user`,'--') AS user, `owner` FROM `dsm_dataset` LEFT JOIN `dsm_user` ON `dsm_user`.`id` = `dsm_dataset`.`owner` ORDER BY `uploaded` DESC";
             } else {
-                $query = "SELECT `name`, `description`, `uploaded`, `public`, `dsm_dataset`.`id`, `file`, IFNULL(`user`,'--') AS user FROM `dsm_dataset` LEFT JOIN `dsm_user` ON `dsm_user`.`id` = `dsm_dataset`.`owner` WHERE `public` = 1 ORDER BY `uploaded` DESC";
+                //get public datasets only
+                $query = "SELECT `name`, `description`, `uploaded`, `public`, `dsm_dataset`.`id`, `file`, IFNULL(`user`,'--') AS user, `owner` FROM `dsm_dataset` LEFT JOIN `dsm_user` ON `dsm_user`.`id` = `dsm_dataset`.`owner` WHERE `public` = 2 ORDER BY `uploaded` DESC";
             }
             $prep = $this->conn->prepare( $query );
             $prep->execute();
@@ -269,13 +272,19 @@ class Access {
 
     function editDataset( $userId, $secret, $dsId, $name, $description, $public ) {
         $loginStatus = $this->isLoggedIn( $userId, $secret );
-        if ( $loginStatus == LoginStatus::NORMAL_USER && $userId == $dsId || $loginStatus == LoginStatus::ADMIN ) {
-            $query = "UPDATE `dsm_dataset` SET `name` = :name, `description` = :description, `public` = :public WHERE `id` = :id";
+        if($description == ""){
+            $description = null;
+        }
+        if ( $loginStatus == LoginStatus::NORMAL_USER || $loginStatus == LoginStatus::ADMIN ) {
+            $query = "UPDATE `dsm_dataset` SET `name` = :name, `description` = :description, `public` = :public WHERE `id` = :id AND ( :loginStatus = 2 OR :loginStatus = 1 AND `owner` = :owner)";
             $prep = $this->conn->prepare( $query );
             $prep->bindParam( ":id", $dsId );
             $prep->bindParam( ":name", $name );
             $prep->bindParam( ":description", $description );
-            $prep->bindParam( ":public", intval( (bool)$public ) );
+            $intval = intval($public);
+            $prep->bindParam( ":public", $intval);
+            $prep->bindParam( ":loginStatus", $loginStatus);
+            $prep->bindParam( ":owner", $userId);
             $prep->execute();
             return ( new Result() )->message( "Updated dataset" );
         } else {
@@ -285,8 +294,11 @@ class Access {
 
     function uploadDataset( $userId, $secret, $name, $description, $pub, $dataset, $metaData ) {
         $loginStatus = $this->isLoggedIn( $userId, $secret, false, true );
+        if($description == ""){
+            $description = null;
+        }
         if ( $loginStatus === LoginStatus::LOGGED_OUT ) {
-            return ( new Result() )->error( "File was not uploaded. Please log in first. user $userId secret $secret" );
+            return ( new Result() )->error( "File was not uploaded. Please log in first." );
         }
 
         $uniqid = uniqid();

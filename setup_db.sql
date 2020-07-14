@@ -22,6 +22,7 @@ CREATE TABLE `dsm_dataset` (
 `description` TEXT NULL,
 `file` varchar(255) NOT NULL DEFAULT '',
 `uploaded` datetime NOT NULL,
+/* 0 stands for private, 1 stands for internal, 2 stands for public */
 `public` tinyint(1) DEFAULT NULL,
 `owner` int(11) DEFAULT NULL,
 PRIMARY KEY (`id`),
