@@ -1,3 +1,4 @@
 .idea
 uploaded-files/*.zip
+uploaded-files/*.json
 config.php
