@@ -317,15 +317,13 @@ class Access {
         $metaObj = json_decode($jsonFileAsString);
         if (move_uploaded_file($dataset["tmp_name"], $zipFile) && ($metaData == null || move_uploaded_file($metaData["tmp_name"], $metaFile))) {
             $query = "INSERT INTO `dsm_dataset` ( `name`, `description`,`file`, `lines`, `zipSize`, `public`, `owner`, `uploaded` ) VALUES ( :name, :description, :file, :lines, :zipSize, :pub, :owner, NOW() )";
-            //from: https://www.php.net/manual/en/function.boolval.php
-            $public = (int)filter_var( $pub, FILTER_VALIDATE_BOOLEAN );
             $prep = $this->conn->prepare( $query );
             $prep->bindParam( ":name", $name );
             $prep->bindParam( ":description", $description );
             $prep->bindParam( ":file", $uniqid );
             $prep->bindParam( ":lines", $metaObj->numberOfRows );
             $prep->bindParam( ":zipSize", $metaObj->fileSize );
-            $prep->bindParam( ":pub", $public );
+            $prep->bindParam( ":pub", $pub );
             $prep->bindParam( ":owner", $userId );
             $prep->execute();
             return ( new Result() )->message( "Uploaded file." );

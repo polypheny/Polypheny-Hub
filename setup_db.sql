@@ -21,6 +21,8 @@ CREATE TABLE `dsm_dataset` (
 `name` varchar(255) NOT NULL DEFAULT '',
 `description` TEXT NULL,
 `file` varchar(255) NOT NULL DEFAULT '',
+`lines` int(11) NULL,
+`zipSize` int(11) NULL,
 `uploaded` datetime NOT NULL,
 /* 0 stands for private, 1 stands for internal, 2 stands for public */
 `public` tinyint(1) DEFAULT NULL,
