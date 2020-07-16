@@ -313,7 +313,10 @@ class Access {
         $zipFile = $this->uploadFolderPath . $uniqid . '.zip';
         $metaFile = $this->uploadFolderPath . $uniqid . '.json';
 
-        $jsonFileAsString = file_get_contents($metaData["tmp_name"]);
+        $jsonFileAsString = null;
+        if($metaData && $metaData["tmp_name"]){
+            $jsonFileAsString = file_get_contents($metaData["tmp_name"]);
+        }
         $metaObj = json_decode($jsonFileAsString);
         if (move_uploaded_file($dataset["tmp_name"], $zipFile) && ($metaData == null || move_uploaded_file($metaData["tmp_name"], $metaFile))) {
             $query = "INSERT INTO `dsm_dataset` ( `name`, `description`,`file`, `lines`, `zipSize`, `public`, `owner`, `uploaded` ) VALUES ( :name, :description, :file, :lines, :zipSize, :pub, :owner, NOW() )";
