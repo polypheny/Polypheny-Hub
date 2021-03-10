@@ -4,7 +4,7 @@ _Polypheny Hub_ is a platform for storing datasets and configurations.
 
 
 ## Roadmap ##
-See the [open issues](https://github.com/polypheny/Polypheny-DB/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/polypheny/Polypheny-DB/labels/A-hub) for a list of proposed features (and known issues).
 
 
 ## Contributing ##
